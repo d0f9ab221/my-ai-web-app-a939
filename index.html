@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Thumbnail Downloader Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-red-600 selection:text-white">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-red-600 text-white p-2 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/20">
+                    <i class="fa-brands fa-youtube text-2xl"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-red-500 bg-clip-text text-transparent">YT Thumbnail Pro</span>
+                    <span class="hidden sm:inline-block ml-2 px-2 py-0.5 text-xs font-semibold bg-slate-800 text-slate-400 rounded-full border border-slate-700">v2.6</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="#how-it-works" class="text-sm text-slate-400 hover:text-white transition">How it works</a>
+                <button id="clearHistoryBtn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-md border border-slate-700 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-trash-can"></i> Clear History
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+        
+        <!-- Hero / Input Section -->
+        <div class="text-center max-w-3xl mx-auto mb-10">
+            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
+                Download YouTube Thumbnails in <span class="text-red-500">Ultra HD</span>
+            </h1>
+            <p class="text-slate-400 text-base sm:text-lg">
+                Extract, customize, and download high-quality thumbnail images instantly. Supports 4K, HD, and standard resolutions with direct CORS-bypassed downloads.
+            </p>
+        </div>
+
+        <!-- Input Form Card -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl mb-10 max-w-4xl mx-auto">
+            <div class="space-y-4">
+                <label for="youtubeUrl" class="block text-sm font-medium text-slate-300">Paste YouTube Video URL or Video ID</label>
+                <div class="relative flex flex-col md:flex-row gap-3">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
+                            <i class="fa-solid fa-link"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="youtubeUrl" 
+                            placeholder="e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ or dQw4w9WgXcQ" 
+                            class="block w-full pl-11 pr-24 py-4 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-base"
+                        >
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center space-x-1">
+                            <button 
+                                type="button" 
+                                id="pasteBtn" 
+                                title="Paste from clipboard" 
+                                class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition"
+                            >
+                                <i class="fa-regular fa-clipboard"></i>
+                            </button>
+                            <button 
+                                type="button" 
+                                id="clearInputBtn" 
+                                title="Clear input" 
+                                class="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition hidden"
+                            >
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button 
+                        id="getThumbnailBtn" 
+                        class="md:w-48 w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-6 rounded-xl transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 active:scale-[0.98]"
+                    >
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Extract Images</span>
+                    </button>
+                </div>
+                <p id="urlError" class="text-red-400 text-sm flex items-center gap-1.5 hidden">
+                    <i class="fa-solid fa-circle-exclamation"></i> Please enter a valid YouTube URL or 11-character Video ID.
+                </p>
+            </div>
+
+            <!-- Quick Samples -->
+            <div class="mt-4 pt-4 border-t border-slate-800/60 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                <span class="font-medium text-slate-500">Try these examples:</span>
+                <button class="sample-link px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition border border-slate-700/50" data-url="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                    Rick Astley
+                </button>
+                <button class="sample-link px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition border border-slate-700/50" data-url="https://www.youtube.com/watch?v=jNQXAC9IVRw">
+                    Me at the zoo
+                </button>
+                <button class="sample-link px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition border border-slate-700/50" data-url="https://youtu.be/9bZkp7q19f0">
+                    PSY - Gangnam Style
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="hidden py-12 text-center">
+            <div class="inline-block w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p class="text-slate-400">Fetching thumbnail resolutions...</p>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden space-y-8 animate-fade-in">
+            
+            <!-- Video Info Header -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6 max-w-4xl mx-auto">
+                <div class="relative w-full md:w-48 aspect-video bg-slate-950 rounded-lg overflow-hidden border border-slate-800 flex-shrink-0">
+                    <img id="miniPreview" src="" alt="Mini Preview" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <i class="fa-brands fa-youtube text-red-600 text-4xl"></i>
+                    </div>
+                </div>
+                <div class="text-center md:text-left flex-grow">
+                    <span class="px-2.5 py-1 text-xs font-semibold bg-red-500/10 text-red-400 rounded-full border border-red-500/20">Active Video</span>
+                    <h2 class="text-xl font-bold text-white mt-2 mb-1">YouTube Video Detected</h2>
+                    <p class="text-slate-400 text-sm">Video ID: <span id="detectedVideoId" class="font-mono text-red-400 font-semibold"></span></p>
+                    <div class="mt-3 flex flex-wrap justify-center md:justify-start gap-2">
+                        <a id="watchVideoBtn" href="#" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-md border border-slate-700 transition inline-flex items-center gap-1.5">
+                            <i class="fa-solid fa-external-link text-slate-400"></i> Watch Video
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid of Resolutions -->
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-images text-red-500"></i> Available Resolutions
+                    </h3>
+                    <span class="text-xs text-slate-400 bg-slate-900 px-3 py-1 rounded-full border border-slate-800">Select a quality to download or copy</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="resolutionsGrid">
+                    <!-- Resolution Cards will be dynamically injected here -->
+                </div>
+            </div>
+
+            <!-- Pro Creator Tools Section -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl max-w-5xl mx-auto mt-12">
+                <div class="border-b border-slate-800 pb-4 mb-6">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-screwdriver-wrench text-red-500"></i> Pro Creator Tools
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">Simulate how your thumbnail looks on YouTube or customize it with overlays.</p>
+                </div>
+
+                <!-- Tabs Header -->
+                <div class="flex border-b border-slate-800 mb-6">
+                    <button id="tabPreviewBtn" class="px-4 py-2 text-sm font-semibold border-b-2 border-red-500 text-white transition-all">
+                        <i class="fa-solid fa-display mr-1.5"></i> Device Feed Simulator
+                    </button>
+                    <button id="tabEditorBtn" class="px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Thumbnail Customizer
+                    </button>
+                </div>
+
+                <!-- Tab 1: Device Feed Simulator -->
+                <div id="tabPreviewContent" class="space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Controls -->
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+                            <h4 class="font-bold text-sm text-slate-300 uppercase tracking-wider">Customize Feed Info</h4>
+                            
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Video Title</label>
+                                <input type="text" id="simTitle" value="This is a simulated YouTube Video Title! Change me to test readability." class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm text-white focus:outline-none focus:border-red-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Channel Name</label>
+                                <input type="text" id="simChannel" value="Creator Channel" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm text-white focus:outline-none focus:border-red-500">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">Views Count</label>
+                                    <input type="text" id="simViews" value="1.2M views" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm text-white focus:outline-none focus:border-red-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">Published Time</label>
+                                    <input type="text" id="simTime" value="3 days ago" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm text-white focus:outline-none focus:border-red-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Previews -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- Desktop Feed Card -->
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-3">YouTube Desktop Feed Preview</span>
+                                <div class="max-w-sm bg-black rounded-xl overflow-hidden border border-slate-900 p-2">
+                                    <div class="relative aspect-video bg-slate-900 rounded-lg overflow-hidden">
+                                        <img id="simImgDesktop" src="" class="w-full h-full object-cover" alt="Preview">
+                                        <span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded font-medium">12:45</span>
+                                    </div>
+                                    <div class="flex gap-3 mt-3">
+                                        <div class="w-9 h-9 rounded-full bg-red-600 flex-shrink-0 flex items-center justify-center text-white font-bold text-sm">
+                                            YT
+                                        </div>
+                                        <div>
+                                            <h5 id="simDisplayTitleDesktop" class="text-sm font-semibold text-white line-clamp-2 leading-tight">This is a simulated YouTube Video Title! Change me to test readability.</h5>
+                                            <p id="simDisplayChannelDesktop" class="text-xs text-slate-400 mt-1 hover:text-white cursor-pointer">Creator Channel</p>
+                                            <p class="text-xs text-slate-400 mt-0.5"><span id="simDisplayViewsDesktop">1.2M views</span> • <span id="simDisplayTimeDesktop">3 days ago</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mobile Feed Card -->
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-3">YouTube Mobile Feed Preview</span>
+                                <div class="w-full bg-black border border-slate-900 p-2">
+                                    <div class="relative aspect-video bg-slate-900 overflow-hidden">
+                                        <img id="simImgMobile" src="" class="w-full h-full object-cover" alt="Preview">
+                                        <span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded font-medium">12:45</span>
+                                    </div>
+                                    <div class="flex gap-3 mt-3 px-2">
+                                        <div class="w-10 h-10 rounded-full bg-red-600 flex-shrink-0 flex items-center justify-center text-white font-bold text-sm">
+                                            YT
+                                        </div>
+                                        <div class="flex-grow">
+                                            <h5 id="simDisplayTitleMobile" class="text-sm font-medium text-white line-clamp-2 leading-tight">This is a simulated YouTube Video Title! Change me to test readability.</h5>
+                                            <p class="text-xs text-slate-400 mt-1">
+                                                <span id="simDisplayChannelMobile">Creator Channel</span> • <span id="simDisplayViewsMobile">1.2M views</span> • <span id="simDisplayTimeMobile">3 days ago</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Thumbnail Customizer -->
+                <div id="tabEditorContent" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Controls -->
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+                            <h4 class="font-bold text-sm text-slate-300 uppercase tracking-wider">Overlay & Border Controls</h4>
+                            
+                            <!-- Play Button Overlay -->
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Play Button Overlay</label>
+                                <select id="editPlayBtn" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm text-white focus:outline-none focus:border-red-500">
+                                    <option value="none">None</option>
+                                    <option value="classic">Classic YouTube Red</option>
+                                    <option value="glass">Modern Glass Style</option>
+                                    <option value="white">Minimalist White</option>
+                                </select>
+                            </div>
+
+                            <!-- Border Color -->
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Border Color</label>
+                                <select id="editBorderColor" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm text-white focus:outline-none focus:border-red-500">
+                                    <option value="none">None</option>
+                                    <option value="#ef4444">Red</option>
+                                    <option value="#eab308">Yellow</option>
+                                    <option value="#22c55e">Neon Green</option>
+                                    <option value="#06b6d4">Cyan</option>
+                                    <option value="#ffffff">White</option>
+                                </select>
+                            </div>
+
+                            <!-- Border Thickness -->
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1 flex justify-between">
+                                    <span>Border Thickness</span>
+                                    <span id="borderThicknessVal">10px</span>
+                                </label>
+                                <input type="range" id="editBorderThickness" min="4" max="30" value="10" class="w-full accent-red-500">
+                            </div>
+
+                            <!-- Vignette (Darken Edges) -->
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1 flex justify-between">
+                                    <span>Vignette (Darken Edges)</span>
+                                    <span id="vignetteVal">0%</span>
+                                </label>
+                                <input type="range" id="editVignette" min="0" max="80" value="0" class="w-full accent-red-500">
+                            </div>
+
+                            <div class="pt-4">
+                                <button id="downloadCustomizedBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-red-600/20">
+                                    <i class="fa-solid fa-download"></i> Download Customized
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Preview -->
+                        <div class="lg:col-span-2 flex flex-col items-center justify-center bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-3 self-start">Live Customized Preview</span>
+                            <div class="relative max-w-full overflow-hidden rounded-lg border border-slate-800 shadow-2xl">
+                                <canvas id="editorCanvas" class="max-w-full h-auto block bg-slate-900"></canvas>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-3 text-center">
+                                <i class="fa-solid fa-circle-info"></i> This canvas generates a custom image locally in your browser. Click "Download Customized" to save it.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div id="historySection" class="mt-16 border-t border-slate-900 pt-10 hidden">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-slate-500"></i> Recent Searches
+            </h3>
+            <div id="historyList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <!-- History items will be injected here -->
+            </div>
+        </div>
+
+        <!-- How it works -->
+        <section id="how-it-works" class="mt-20 border-t border-slate-900 pt-12 max-w-4xl mx-auto">
+            <h3 class="text-2xl font-bold text-white text-center mb-8">How to Download YouTube Thumbnails</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800/60 text-center">
+                    <div class="w-12 h-12 bg-red-600/10 text-red-500 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                        1
+                    </div>
+                    <h4 class="font-semibold text-white mb-2">Copy URL</h4>
+                    <p class="text-sm text-slate-400">Copy the link of the YouTube video from your browser or app.</p>
+                </div>
+                <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800/60 text-center">
+                    <div class="w-12 h-12 bg-red-600/10 text-red-500 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                        2
+                    </div>
+                    <h4 class="font-semibold text-white mb-2">Paste & Extract</h4>
+                    <p class="text-sm text-slate-400">Paste the link into the input box above and click "Extract Images".</p>
+                </div>
+                <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800/60 text-center">
+                    <div class="w-12 h-12 bg-red-600/10 text-red-500 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                        3
+                    </div>
+                    <h4 class="font-semibold text-white mb-2">Download & Copy</h4>
+                    <p class="text-sm text-slate-400">Choose your preferred resolution and click Download or Copy to Clipboard instantly!</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-900 bg-slate-950 py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+            <p class="text-sm text-slate-500">
+                &copy; <span id="currentYear"></span> YT Thumbnail Pro. All rights reserved. This tool is not affiliated with YouTube or Google.
+            </p>
+            <p class="text-xs text-slate-600">
+                Designed for creators, designers, and developers. Fast, free, and secure.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Download Helper Modal (Guarantees 100% success rate on Mobile Phones) -->
+    <div id="downloadModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden animate-fade-in">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl flex flex-col">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
+                <div class="flex items-center gap-2">
+                    <span class="flex h-3 w-3 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    <h3 class="font-bold text-white text-sm sm:text-base">Your Download is Ready!</h3>
+                </div>
+                <button id="closeDownloadModal" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6 space-y-4 overflow-y-auto max-h-[75vh]">
+                <!-- Instruction Box -->
+                <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+                    <p class="text-sm text-slate-200 font-medium mb-1" id="modalInstructionTitle">
+                        <i class="fa-solid fa-mobile-screen-button text-red-400 mr-1"></i> Mobile Phone User?
+                    </p>
+                    <p class="text-xs text-slate-400" id="modalInstructionText">
+                        If the automatic download didn't trigger, <strong>tap and hold (long-press) the image below</strong> and select <strong>"Save to Photos"</strong> or <strong>"Download Image"</strong>.
+                    </p>
+                </div>
+
+                <!-- Image Preview for Long Press -->
+                <div class="relative aspect-video bg-slate-950 rounded-lg overflow-hidden border border-slate-800 group">
+                    <img id="modalPreviewImg" src="" alt="Download Preview" class="w-full h-full object-contain">
+                    <div class="absolute inset-0 bg-black/40 opacity-100 group-hover:opacity-0 transition-opacity flex flex-col items-center justify-center pointer-events-none text-center p-4">
+                        <i class="fa-solid fa-hand-pointer text-white text-3xl animate-bounce mb-2"></i>
+                        <span class="text-white font-bold text-sm drop-shadow-md">TAP & HOLD TO SAVE</span>
+                        <span class="text-slate-300 text-xs drop-shadow-md mt-1">(On phones & tablets)</span>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="flex justify-between text-xs text-slate-400 px-1">
+                    <span>Resolution: <strong id="modalResolution" class="text-white">1280 x 720</strong></span>
+                    <span>Format: <strong class="text-white">JPG</strong></span>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-slate-950/50 border-t border-slate-800 flex flex-col sm:flex-row gap-2">
+                <button id="modalForceDownloadBtn" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-download"></i> Force Direct Download
+                </button>
+                <button id="modalCloseBtn" class="sm:w-28 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-3 px-4 rounded-xl transition border border-slate-700">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 border border-slate-800 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <div id="toastIcon" class="text-green-500">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <p id="toastMessage" class="text-sm font-medium"></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set current year in footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            const youtubeUrlInput = document.getElementById('youtubeUrl');
+            const getThumbnailBtn = document.getElementById('getThumbnailBtn');
+            const pasteBtn = document.getElementById('pasteBtn');
+            const clearInputBtn = document.getElementById('clearInputBtn');
+            const urlError = document.getElementById('urlError');
+            const loadingState = document.getElementById('loadingState');
+            const resultsSection = document.getElementById('resultsSection');
+            const miniPreview = document.getElementById('miniPreview');
+            const detectedVideoIdSpan = document.getElementById('detectedVideoId');
+            const watchVideoBtn = document.getElementById('watchVideoBtn');
+            const resolutionsGrid = document.getElementById('resolutionsGrid');
+            const historySection = document.getElementById('historySection');
+            const historyList = document.getElementById('historyList');
+            const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+            // Pro Tools Elements
+            const tabPreviewBtn = document.getElementById('tabPreviewBtn');
+            const tabEditorBtn = document.getElementById('tabEditorBtn');
+            const tabPreviewContent = document.getElementById('tabPreviewContent');
+            const tabEditorContent = document.getElementById('tabEditorContent');
+
+            // Simulator Elements
+            const simTitle = document.getElementById('simTitle');
+            const simChannel = document.getElementById('simChannel');
+            const simViews = document.getElementById('simViews');
+            const simTime = document.getElementById('simTime');
+            const simImgDesktop = document.getElementById('simImgDesktop');
+            const simImgMobile = document.getElementById('simImgMobile');
+            const simDisplayTitleDesktop = document.getElementById('simDisplayTitleDesktop');
+            const simDisplayChannelDesktop = document.getElementById('simDisplayChannelDesktop');
+            const simDisplayViewsDesktop = document.getElementById('simDisplayViewsDesktop');
+            const simDisplayTimeDesktop = document.getElementById('simDisplayTimeDesktop');
+            const simDisplayTitleMobile = document.getElementById('simDisplayTitleMobile');
+            const simDisplayChannelMobile = document.getElementById('simDisplayChannelMobile');
+            const simDisplayViewsMobile = document.getElementById('simDisplayViewsMobile');
+            const simDisplayTimeMobile = document.getElementById('simDisplayTimeMobile');
+
+            // Editor Elements
+            const editPlayBtn = document.getElementById('editPlayBtn');
+            const editBorderColor = document.getElementById('editBorderColor');
+            const editBorderThickness = document.getElementById('editBorderThickness');
+            const borderThicknessVal = document.getElementById('borderThicknessVal');
+            const editVignette = document.getElementById('editVignette');
+            const vignetteVal = document.getElementById('vignetteVal');
+            const editorCanvas = document.getElementById('editorCanvas');
+            const downloadCustomizedBtn = document.getElementById('downloadCustomizedBtn');
+
+            // Download Modal Elements
+            const downloadModal = document.getElementById('downloadModal');
+            const closeDownloadModal = document.getElementById('closeDownloadModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const modalPreviewImg = document.getElementById('modalPreviewImg');
+            const modalResolution = document.getElementById('modalResolution');
+            const modalForceDownloadBtn = document.getElementById('modalForceDownloadBtn');
+            const modalInstructionTitle = document.getElementById('modalInstructionTitle');
+            const modalInstructionText = document.getElementById('modalInstructionText');
+
+            let activeVideoId = '';
+            let activeImageUrl = '';
+            let currentModalBase64 = '';
+            let currentModalFilename = '';
+
+            // Quality configurations
+            const qualities = [
+                {
+                    key: 'maxresdefault',
+                    name: 'Ultra HD / Maximum Resolution',
+                    resolution: '1280 x 720 (or 1920 x 1080)',
+                    badge: 'Best Quality',
+                    badgeColor: 'bg-red-500/10 text-red-400 border-red-500/20'
+                },
+                {
+                    key: 'sddefault',
+                    name: 'Standard Definition (SD)',
+                    resolution: '640 x 480',
+                    badge: 'Standard',
+                    badgeColor: 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                },
+                {
+                    key: 'hqdefault',
+                    name: 'High Quality (HQ)',
+                    resolution: '480 x 360',
+                    badge: 'Medium',
+                    badgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                },
+                {
+                    key: 'mqdefault',
+                    name: 'Medium Quality (MQ)',
+                    resolution: '320 x 180',
+                    badge: 'Low',
+                    badgeColor: 'bg-slate-800 text-slate-400 border-slate-700'
+                },
+                {
+                    key: 'default',
+                    name: 'Default Quality',
+                    resolution: '120 x 90',
+                    badge: 'Thumbnail',
+                    badgeColor: 'bg-slate-800 text-slate-400 border-slate-700'
+                }
+            ];
+
+            // Show/Hide clear button based on input
+            youtubeUrlInput.addEventListener('input', () => {
+                if (youtubeUrlInput.value.trim().length > 0) {
+                    clearInputBtn.classList.remove('hidden');
+                } else {
+                    clearInputBtn.classList.add('hidden');
+                }
+            });
+
+            // Clear input
+            clearInputBtn.addEventListener('click', () => {
+                youtubeUrlInput.value = '';
+                clearInputBtn.classList.add('hidden');
+                youtubeUrlInput.focus();
+            });
+
+            // Paste from clipboard
+            pasteBtn.addEventListener('click', async () => {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    youtubeUrlInput.value = text;
+                    clearInputBtn.classList.remove('hidden');
+                    showToast('Pasted from clipboard!', 'success');
+                    extractThumbnails();
+                } catch (err) {
+                    showToast('Could not read clipboard. Please paste manually.', 'error');
+                }
+            });
+
+            // Extract video ID from various YouTube URL formats
+            function getYouTubeVideoId(url) {
+                url = url.trim();
+                if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
+                    return url;
+                }
+                const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/;
+                const match = url.match(regex);
+                return match ? match[1] : null;
+            }
+
+            // Extract action
+            function extractThumbnails() {
+                const inputVal = youtubeUrlInput.value.trim();
+                const videoId = getYouTubeVideoId(inputVal);
+
+                urlError.classList.add('hidden');
+                
+                if (!videoId) {
+                    urlError.classList.remove('hidden');
+                    resultsSection.classList.add('hidden');
+                    return;
+                }
+
+                activeVideoId = videoId;
+                activeImageUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+
+                // Show loading
+                loadingState.classList.remove('hidden');
+                resultsSection.classList.add('hidden');
+
+                setTimeout(() => {
+                    loadingState.classList.add('hidden');
+                    resultsSection.classList.remove('hidden');
+                    
+                    // Update active video info
+                    miniPreview.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                    detectedVideoIdSpan.textContent = videoId;
+                    watchVideoBtn.href = `https://www.youtube.com/watch?v=${videoId}`;
+
+                    // Update Simulator Previews
+                    simImgDesktop.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                    simImgMobile.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+
+                    // Render resolutions grid
+                    renderResolutions(videoId);
+
+                    // Initialize Canvas Editor
+                    initCanvasEditor();
+
+                    // Save to history
+                    saveToHistory(videoId);
+                    
+                    // Scroll to results smoothly
+                    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 600);
+            }
+
+            getThumbnailBtn.addEventListener('click', extractThumbnails);
+
+            // Trigger on Enter key
+            youtubeUrlInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    extractThumbnails();
+                }
+            });
+
+            // Render the resolution cards
+            function renderResolutions(videoId) {
+                resolutionsGrid.innerHTML = '';
+
+                qualities.forEach(q => {
+                    const imgUrl = `https://img.youtube.com/vi/${videoId}/${q.key}.jpg`;
+                    const card = document.createElement('div');
+                    card.className = 'bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg hover:border-slate-700 transition duration-200 flex flex-col justify-between';
+                    
+                    card.innerHTML = `
+                        <div>
+                            <div class="relative aspect-video bg-slate-950 overflow-hidden group">
+                                <img src="${imgUrl}" alt="${q.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='/api/placeholder/400/225'; this.onerror=null; handleImageError(this);">
+                                <div class="absolute top-3 right-3">
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-md border ${q.badgeColor} backdrop-blur-sm">
+                                        ${q.badge}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-bold text-white text-sm sm:text-base line-clamp-1">${q.name}</h4>
+                                <p class="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-expand text-slate-500"></i> ${q.resolution}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="p-4 pt-0 space-y-2">
+                            <button 
+                                onclick="downloadThumbnail('${imgUrl}', '${videoId}_${q.key}.jpg', '${q.resolution}', this)"
+                                class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-3 rounded-lg transition flex items-center justify-center gap-1.5 active:scale-95"
+                            >
+                                <i class="fa-solid fa-download"></i> Download Image
+                            </button>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button 
+                                    onclick="copyToClipboard('${imgUrl}', this)"
+                                    class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-2 px-2 rounded-lg transition flex items-center justify-center gap-1 border border-slate-700"
+                                >
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                                <a 
+                                    href="${imgUrl}" 
+                                    target="_blank" 
+                                    class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-2 px-2 rounded-lg transition flex items-center justify-center gap-1 border border-slate-700"
+                                >
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Link
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    resolutionsGrid.appendChild(card);
+                });
+            }
+
+            // Handle image load error (e.g., some videos don't have maxresdefault)
+            window.handleImageError = function(imgElement) {
+                const cardBody = imgElement.closest('.bg-slate-900');
+                if (cardBody) {
+                    const badge = cardBody.querySelector('.absolute span');
+                    if (badge) {
+                        badge.textContent = 'Not Available';
+                        badge.className = 'px-2 py-1 text-xs font-semibold rounded-md border bg-red-950/40 text-red-400 border-red-900/50 backdrop-blur-sm';
+                    }
+                    imgElement.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100" fill="%231e293b"><rect width="100" height="100"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%2364748b" font-family="sans-serif" font-size="8">Resolution Not Available</text></svg>';
+                }
+            };
+
+            // Helper to convert image URL to Base64 Data URL via proxy
+            async function getBase64Image(imageUrl) {
+                const cleanUrl = imageUrl.replace(/^https?:\/\//, '');
+                const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}`;
+                
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Failed to fetch image via proxy');
+                const blob = await response.blob();
+                
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            }
+
+            // Robust Download Mechanism with CORS bypass proxy & Mobile Long-Press Fallback
+            window.downloadThumbnail = async function(imageUrl, filename, resolution, buttonElement) {
+                const originalContent = buttonElement.innerHTML;
+                buttonElement.disabled = true;
+                buttonElement.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Preparing...`;
+
+                try {
+                    // 1. Convert image to Base64 Data URL (bypasses CORS and allows direct saving/long-press)
+                    const base64Data = await getBase64Image(imageUrl);
+                    
+                    currentModalBase64 = base64Data;
+                    currentModalFilename = filename;
+
+                    // 2. Set up the Download Helper Modal
+                    modalPreviewImg.src = base64Data;
+                    modalResolution.textContent = resolution;
+
+                    // Detect if mobile device to customize instructions
+                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                    if (isMobile) {
+                        modalInstructionTitle.innerHTML = `<i class="fa-solid fa-mobile-screen-button text-red-400 mr-1"></i> Mobile Phone Detected`;
+                        modalInstructionText.innerHTML = `To save this thumbnail, <strong>tap and hold (long-press) the image below</strong> and select <strong>"Save to Photos"</strong> or <strong>"Download Image"</strong>.`;
+                    } else {
+                        modalInstructionTitle.innerHTML = `<i class="fa-solid fa-desktop text-red-400 mr-1"></i> Desktop Computer Detected`;
+                        modalInstructionText.innerHTML = `If the automatic download didn't start, <strong>right-click the image below</strong> and select <strong>"Save image as..."</strong>.`;
+                    }
+
+                    // 3. Open the Modal
+                    downloadModal.classList.remove('hidden');
+
+                    // 4. Attempt automatic download trigger
+                    triggerDirectDownload(base64Data, filename);
+                    
+                    showToast('Download prepared! Use the helper if it did not start.', 'success');
+                } catch (error) {
+                    console.warn('Proxy failed, trying direct link fallback', error);
+                    // Fallback: Open in new tab
+                    window.open(imageUrl, '_blank');
+                    showToast('Opening image in new tab. Right-click or tap & hold to save.', 'info');
+                } finally {
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = originalContent;
+                }
+            };
+
+            // Trigger direct programmatic download
+            function triggerDirectDownload(dataUrl, filename) {
+                const tempLink = document.createElement('a');
+                tempLink.href = dataUrl;
+                tempLink.download = filename;
+                document.body.appendChild(tempLink);
+                tempLink.click();
+                document.body.removeChild(tempLink);
+            }
+
+            // Force Direct Download button inside modal
+            modalForceDownloadBtn.addEventListener('click', () => {
+                if (currentModalBase64) {
+                    triggerDirectDownload(currentModalBase64, currentModalFilename);
+                    showToast('Attempting direct download again...', 'info');
+                }
+            });
+
+            // Close Modal handlers
+            function closeModal() {
+                downloadModal.classList.add('hidden');
+            }
+            closeDownloadModal.addEventListener('click', closeModal);
+            modalCloseBtn.addEventListener('click', closeModal);
+            downloadModal.addEventListener('click', (e) => {
+                if (e.target === downloadModal) closeModal();
+            });
+
+            // Copy Image to Clipboard
+            window.copyToClipboard = async function(imageUrl, buttonElement) {
+                const originalContent = buttonElement.innerHTML;
+                buttonElement.disabled = true;
+                buttonElement.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Copying...`;
+
+                const cleanUrl = imageUrl.replace(/^https?:\/\//, '');
+                const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}`;
+
+                try {
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) throw new Error('Failed to fetch image');
+                    const blob = await response.blob();
+                    
+                    // Convert blob to PNG via canvas to ensure clipboard compatibility
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+                    img.src = URL.createObjectURL(blob);
+                    
+                    await new Promise((resolve, reject) => {
+                        img.onload = resolve;
+                        img.onerror = reject;
+                    });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    canvas.toBlob(async (pngBlob) => {
+                        try {
+                            await navigator.clipboard.write([
+                                new ClipboardItem({
+                                    [pngBlob.type]: pngBlob
+                                })
+                            ]);
+                            showToast('Copied to clipboard! Paste anywhere (Ctrl+V).', 'success');
+                        } catch (err) {
+                            console.error(err);
+                            showToast('Clipboard write blocked. Try downloading instead.', 'error');
+                        }
+                    }, 'image/png');
+
+                } catch (error) {
+                    console.error(error);
+                    showToast('Could not copy image. Try downloading instead.', 'error');
+                } finally {
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = originalContent;
+                }
+            };
+
+            // Pro Tools Tabs Switcher
+            tabPreviewBtn.addEventListener('click', () => {
+                tabPreviewBtn.className = 'px-4 py-2 text-sm font-semibold border-b-2 border-red-500 text-white transition-all';
+                tabEditorBtn.className = 'px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all';
+                tabPreviewContent.classList.remove('hidden');
+                tabEditorContent.classList.add('hidden');
+            });
+
+            tabEditorBtn.addEventListener('click', () => {
+                tabEditorBtn.className = 'px-4 py-2 text-sm font-semibold border-b-2 border-red-500 text-white transition-all';
+                tabPreviewBtn.className = 'px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all';
+                tabEditorContent.classList.remove('hidden');
+                tabPreviewContent.classList.add('hidden');
+                // Redraw canvas when switching to editor
+                drawCustomizedThumbnail();
+            });
+
+            // Live Simulator Updates
+            function updateSimulator() {
+                const titleText = simTitle.value;
+                const channelText = simChannel.value;
+                const viewsText = simViews.value;
+                const timeText = simTime.value;
+
+                simDisplayTitleDesktop.textContent = titleText;
+                simDisplayChannelDesktop.textContent = channelText;
+                simDisplayViewsDesktop.textContent = viewsText;
+                simDisplayTimeDesktop.textContent = timeText;
+
+                simDisplayTitleMobile.textContent = titleText;
+                simDisplayChannelMobile.textContent = channelText;
+                simDisplayViewsMobile.textContent = viewsText;
+                simDisplayTimeMobile.textContent = timeText;
+            }
+
+            simTitle.addEventListener('input', updateSimulator);
+            simChannel.addEventListener('input', updateSimulator);
+            simViews.addEventListener('input', updateSimulator);
+            simTime.addEventListener('input', updateSimulator);
+
+            // Canvas Editor Logic
+            let editorImage = new Image();
+            
+            function initCanvasEditor() {
+                // Load image via proxy to avoid CORS issues on canvas
+                const cleanUrl = activeImageUrl.replace(/^https?:\/\//, '');
+                editorImage.crossOrigin = "anonymous";
+                editorImage.src = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}`;
+                
+                editorImage.onload = () => {
+                    drawCustomizedThumbnail();
+                };
+                editorImage.onerror = () => {
+                    // Fallback to standard definition if maxres is not available
+                    const fallbackUrl = `https://img.youtube.com/vi/${activeVideoId}/hqdefault.jpg`.replace(/^https?:\/\//, '');
+                    editorImage.src = `https://images.weserv.nl/?url=${encodeURIComponent(fallbackUrl)}`;
+                };
+            }
+
+            function drawCustomizedThumbnail() {
+                if (!editorImage.complete) return;
+
+                const ctx = editorCanvas.getContext('2d');
+                
+                // Set canvas size to match image
+                editorCanvas.width = editorImage.width || 1280;
+                editorCanvas.height = editorImage.height || 720;
+
+                const width = editorCanvas.width;
+                const height = editorCanvas.height;
+
+                // 1. Draw original image
+                ctx.drawImage(editorImage, 0, 0, width, height);
+
+                // 2. Apply Vignette (Darken Edges)
+                const vignetteIntensity = parseInt(editVignette.value) / 100;
+                if (vignetteIntensity > 0) {
+                    const gradient = ctx.createRadialGradient(width / 2, height / 2, Math.min(width, height) * 0.3, width / 2, height / 2, Math.max(width, height) * 0.7);
+                    gradient.addColorStop(0, 'rgba(0,0,0,0)');
+                    gradient.addColorStop(1, `rgba(0,0,0,${vignetteIntensity})`);
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, width, height);
+                }
+
+                // 3. Draw Border
+                const borderColor = editBorderColor.value;
+                const borderThickness = parseInt(editBorderThickness.value);
+                if (borderColor !== 'none') {
+                    ctx.strokeStyle = borderColor;
+                    ctx.lineWidth = borderThickness * 2; // multiply because stroke is centered
+                    ctx.strokeRect(0, 0, width, height);
+                }
+
+                // 4. Draw Play Button Overlay
+                const playStyle = editPlayBtn.value;
+                if (playStyle !== 'none') {
+                    const btnWidth = width * 0.15;
+                    const btnHeight = btnWidth * 0.7;
+                    const x = (width - btnWidth) / 2;
+                    const y = (height - btnHeight) / 2;
+
+                    ctx.save();
+                    
+                    if (playStyle === 'classic') {
+                        // Classic YouTube Red Button
+                        ctx.fillStyle = '#ef4444';
+                        drawRoundedRect(ctx, x, y, btnWidth, btnHeight, btnHeight * 0.2);
+                        ctx.fill();
+                        
+                        // White Triangle
+                        ctx.fillStyle = '#ffffff';
+                        ctx.beginPath();
+                        ctx.moveTo(x + btnWidth * 0.42, y + btnHeight * 0.3);
+                        ctx.lineTo(x + btnWidth * 0.42, y + btnHeight * 0.7);
+                        ctx.lineTo(x + btnWidth * 0.62, y + btnHeight * 0.5);
+                        ctx.closePath();
+                        ctx.fill();
+                    } else if (playStyle === 'glass') {
+                        // Modern Glass Style
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                        ctx.lineWidth = 4;
+                        drawRoundedRect(ctx, x, y, btnWidth, btnHeight, btnHeight * 0.2);
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // White Triangle
+                        ctx.fillStyle = '#ffffff';
+                        ctx.beginPath();
+                        ctx.moveTo(x + btnWidth * 0.42, y + btnHeight * 0.3);
+                        ctx.lineTo(x + btnWidth * 0.42, y + btnHeight * 0.7);
+                        ctx.lineTo(x + btnWidth * 0.62, y + btnHeight * 0.5);
+                        ctx.closePath();
+                        ctx.fill();
+                    } else if (playStyle === 'white') {
+                        // Minimalist White Circle
+                        const radius = btnHeight * 0.5;
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                        ctx.beginPath();
+                        ctx.arc(width / 2, height / 2, radius, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        // Dark Triangle
+                        ctx.fillStyle = '#0f172a';
+                        ctx.beginPath();
+                        ctx.moveTo(width / 2 - radius * 0.25, height / 2 - radius * 0.4);
+                        ctx.lineTo(width / 2 - radius * 0.25, height / 2 + radius * 0.4);
+                        ctx.lineTo(width / 2 + radius * 0.4, height / 2);
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+
+                    ctx.restore();
+                }
+            }
+
+            // Helper to draw rounded rectangles on canvas
+            function drawRoundedRect(ctx, x, y, width, height, radius) {
+                ctx.beginPath();
+                ctx.moveTo(x + radius, y);
+                ctx.lineTo(x + width - radius, y);
+                ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+                ctx.lineTo(x + width, y + height - radius);
+                ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                ctx.lineTo(x + radius, y + height);
+                ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+                ctx.lineTo(x, y + radius);
+                ctx.quadraticCurveTo(x, y, x + radius, y);
+                ctx.closePath();
+            }
+
+            // Editor Controls Event Listeners
+            editPlayBtn.addEventListener('change', drawCustomizedThumbnail);
+            editBorderColor.addEventListener('change', drawCustomizedThumbnail);
+            
+            editBorderThickness.addEventListener('input', (e) => {
+                borderThicknessVal.textContent = `${e.target.value}px`;
+                drawCustomizedThumbnail();
+            });
+            
+            editVignette.addEventListener('input', (e) => {
+                vignetteVal.textContent = `${e.target.value}%`;
+                drawCustomizedThumbnail();
+            });
+
+            // Download Customized Thumbnail
+            downloadCustomizedBtn.addEventListener('click', () => {
+                try {
+                    const dataUrl = editorCanvas.toDataURL('image/jpeg', 0.95);
+                    currentModalBase64 = dataUrl;
+                    currentModalFilename = `${activeVideoId}_customized.jpg`;
+
+                    // Set up the Download Helper Modal
+                    modalPreviewImg.src = dataUrl;
+                    modalResolution.textContent = `${editorCanvas.width} x ${editorCanvas.height}`;
+
+                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                    if (isMobile) {
+                        modalInstructionTitle.innerHTML = `<i class="fa-solid fa-mobile-screen-button text-red-400 mr-1"></i> Mobile Phone Detected`;
+                        modalInstructionText.innerHTML = `To save your customized thumbnail, <strong>tap and hold (long-press) the image below</strong> and select <strong>"Save to Photos"</strong> or <strong>"Download Image"</strong>.`;
+                    } else {
+                        modalInstructionTitle.innerHTML = `<i class="fa-solid fa-desktop text-red-400 mr-1"></i> Desktop Computer Detected`;
+                        modalInstructionText.innerHTML = `If the automatic download didn't start, <strong>right-click the image below</strong> and select <strong>"Save image as..."</strong>.`;
+                    }
+
+                    // Open the Modal
+                    downloadModal.classList.remove('hidden');
+
+                    // Attempt automatic download trigger
+                    triggerDirectDownload(dataUrl, currentModalFilename);
+                    
+                    showToast('Customized thumbnail prepared!', 'success');
+                } catch (err) {
+                    console.error(err);
+                    showToast('Failed to download customized image.', 'error');
+                }
+            });
+
+            // Toast Notification helper
+            function showToast(message, type = 'success') {
+                const toast = document.getElementById('toast');
+                const toastMessage = document.getElementById('toastMessage');
+                const toastIcon = document.getElementById('toastIcon');
+
+                toastMessage.textContent = message;
+
+                if (type === 'success') {
+                    toastIcon.innerHTML = '<i class="fa-solid fa-circle-check text-green-500 text-lg"></i>';
+                } else if (type === 'error') {
+                    toastIcon.innerHTML = '<i class="fa-solid fa-circle-exclamation text-red-500 text-lg"></i>';
+                } else {
+                    toastIcon.innerHTML = '<i class="fa-solid fa-circle-info text-blue-500 text-lg"></i>';
+                }
+
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 4000);
+            }
+
+            // Sample links click handler
+            document.querySelectorAll('.sample-link').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    youtubeUrlInput.value = btn.getAttribute('data-url');
+                    clearInputBtn.classList.remove('hidden');
+                    extractThumbnails();
+                });
+            });
+
+            // History Management
+            function saveToHistory(videoId) {
+                let history = JSON.parse(localStorage.getItem('yt_thumbnail_history')) || [];
+                history = history.filter(id => id !== videoId);
+                history.unshift(videoId);
+                if (history.length > 12) history.pop();
+                
+                localStorage.setItem('yt_thumbnail_history', JSON.stringify(history));
+                renderHistory();
+            }
+
+            // Render History
+            function renderHistory() {
+                const history = JSON.parse(localStorage.getItem('yt_thumbnail_history')) || [];
+                if (history.length === 0) {
+                    historySection.classList.add('hidden');
+                    return;
+                }
+
+                historySection.classList.remove('hidden');
+                historyList.innerHTML = '';
+
+                history.forEach(videoId => {
+                    const item = document.createElement('div');
+                    item.className = 'group relative bg-slate-900 border border-slate-800 rounded-lg overflow-hidden cursor-pointer hover:border-red-500/50 transition duration-200';
+                    item.innerHTML = `
+                        <div class="aspect-video bg-slate-950 relative">
+                            <img src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" alt="History Preview" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                <i class="fa-solid fa-play text-white text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="p-2 text-center">
+                            <span class="text-xs font-mono text-slate-400 group-hover:text-red-400 transition">${videoId}</span>
+                        </div>
+                    `;
+                    item.addEventListener('click', () => {
+                        youtubeUrlInput.value = videoId;
+                        clearInputBtn.classList.remove('hidden');
+                        extractThumbnails();
+                    });
+                    historyList.appendChild(item);
+                });
+            }
+
+            // Clear History
+            clearHistoryBtn.addEventListener('click', () => {
+                localStorage.removeItem('yt_thumbnail_history');
+                renderHistory();
+                showToast('Search history cleared!', 'info');
+            });
+
+            // Initial History Render
+            renderHistory();
+        });
+    </script>
+</body>
+</html>
